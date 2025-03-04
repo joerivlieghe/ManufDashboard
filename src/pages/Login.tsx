@@ -21,7 +21,7 @@ const Login: React.FC = () => {
     useEffect(() => {
         const fetchAreas = async () => {
             try {
-                const response = await fetch('/api/getAreas');
+                const response = await fetch('/api/getAreas'); // Assuming the endpoint is /api/getAreas
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
 
         const fetchTeams = async () => {
             try {
-                const response = await fetch('/api/getTeams');
+                const response = await fetch('/api/getTeams'); // Assuming the endpoint is /api/getTeams
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
