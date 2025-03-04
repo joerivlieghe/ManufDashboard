@@ -77,6 +77,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         });
 
         request.on('requestCompleted', function() {
+            context.log("getTeams - Raw result:", result);
             const formattedResult = result.map(item => ({
                 id: item.Id,
                 name: item.Team,
