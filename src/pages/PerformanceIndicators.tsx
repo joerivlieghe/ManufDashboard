@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from '../msalConfig';
+import { PowerBIEmbed } from 'powerbi-client-react';
 import Layout from '../components/Layout';
 import { kpis } from '../data/mockData';
 import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
 
 const PerformanceIndicators: React.FC = () => {
+  const { instance, accounts } = useMsal();
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const request = {
+      ...loginRequest,
+      account: accounts[0]
+    };
+
+    instance.acquireTokenSilent(request)
+      .then(response => {
+        setAccessToken(response.accessToken);
+      })
+      .catch(error => {
+        console.error("Silent token acquisition failed, acquiring token using redirect", error);
+        instance.acquireTokenRedirect(request);
+      });
+  }, [instance, accounts]);
+
+  const reportId = "fa679263-4024-4416-982c-1b2fe3b3d5dd"; // Replace with your report ID
+  const embedUrl = "https://app.powerbi.com/reportEmbed?reportId=fa679263-4024-4416-982c-1b2fe3b3d5dd&autoAuth=true&ctid=f25493ae-1c98-41d7-8a33-0be75f5fe603"; // Replace with your embed URL
+
   const categoryNames = {
     safety: 'Safety',
     quality: 'Quality',
@@ -48,6 +73,41 @@ const PerformanceIndicators: React.FC = () => {
     <Layout title="Performance Indicators">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-volvo font-bold text-volvo-blue mb-6">SQDCEP KPIs</h2>
+
+        {accessToken ? (
+          <PowerBIEmbed
+            embedConfig={{
+              type: 'report',   // Supported types: report, dashboard, tile, visual and qna
+              id: reportId,
+              embedUrl: embedUrl,
+              accessToken: accessToken,
+              tokenType: 0,       // 0 = Embed, 1 = AAD
+              settings: {
+                filterPaneEnabled: false,
+                navContentPaneEnabled: false,
+              }
+            }}
+            eventHandlers={
+              new Map([
+                ['loaded', function () {
+                  console.log('Report loaded');
+                }],
+                ['rendered', function () {
+                  console.log('Report rendered');
+                }],
+                ['error', function (event: any) {
+                  console.error(event?.detail);
+                }]
+              ])
+            }
+            cssClassName={"report-style-class"}
+            getEmbeddedComponent={ (embeddedReport: any) => {
+              (window as any)['report'] = embeddedReport;
+            }}
+          />
+        ) : (
+          <div>Loading...</div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Object.entries(categoryNames).map(([category, name]) => {
@@ -69,15 +129,15 @@ const PerformanceIndicators: React.FC = () => {
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div 
+                        <div
                           className={`h-2.5 rounded-full ${getProgressColor(kpi.value, kpi.target, isLowerBetter(category))}`}
-                          style={{ 
+                          style={{
                             width: `${Math.min(
-                              isLowerBetter(category) 
-                                ? (kpi.target / kpi.value) * 100 
-                                : (kpi.value / kpi.target) * 100, 
+                              isLowerBetter(category)
+                                ? (kpi.target / kpi.value) * 100
+                                : (kpi.value / kpi.target) * 100,
                               100
-                            )}%` 
+                            )}%`
                           }}
                         ></div>
                       </div>
