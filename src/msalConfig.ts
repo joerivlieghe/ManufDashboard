@@ -15,7 +15,7 @@ const msalConfig: Configuration = {
 
 // Add scopes here for ID token to be used at Microsoft identity platform endpoints.
 const loginRequest = {
-  scopes: ["User.Read"]
+  scopes: ["User.Read", "https://analysis.windows.net/powerbi/api/Report.Read.All", "https://analysis.windows.net/powerbi/api/Dataset.Read.All"]
 };
 
 // Add here the endpoints for MS Graph API services you would like to use.
