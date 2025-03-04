@@ -79,13 +79,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         request.on('requestCompleted', function() {
             const formattedResult = result.map(item => ({
                 id: item.Id,
-                name: item.Name,
+                name: item.Team,
                 areaId: item.AreaId
             }));
             context.res = {
                 status: 200,
                 body: JSON.stringify(formattedResult)
             };
+            context.log("getTeams - Formatted result:", formattedResult);
         });
 
         connection.execSql(request);

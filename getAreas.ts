@@ -79,8 +79,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         request.on('requestCompleted', function() {
             const formattedResult = result.map(item => ({
                 id: item.Id,
-                name: item.Name
+                name: item.Area
             }));
+            context.log("getAreas - Formatted result:", formattedResult);
             context.res = {
                 status: 200,
                 body: JSON.stringify(formattedResult)
