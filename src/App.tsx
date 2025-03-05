@@ -17,14 +17,37 @@ import Training from './pages/Training';
 import PerformanceIndicators from './pages/PerformanceIndicators';
 import ImprovementProposals from './pages/ImprovementProposals';
 import Communication from './pages/Communication';
+import { useState, useEffect } from 'react';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
 function App() {
+  const [message, setMessage] = useState<string>('');
+
+  useEffect(() => {
+    const fetchMessage = async () => {
+      try {
+        const response = await fetch('/api/message');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setMessage(data.text);
+      } catch (error) {
+        console.error("Could not fetch message", error);
+        setMessage("Error fetching message");
+      }
+    };
+
+    fetchMessage();
+  }, []);
+
   return (
     <MsalProvider instance={msalInstance}>
       <UserProvider>
+        
         <Router>
+          {message && <div>Message from API: {message}</div>}
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
