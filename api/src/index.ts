@@ -1,5 +1,3 @@
-import { app } from '@azure/functions';
-
-app.setup({
-    enableHttpStream: true,
-});
+export * from './functions/getAreas';
+export * from './functions/getTeams';
+export * from './functions/message';
