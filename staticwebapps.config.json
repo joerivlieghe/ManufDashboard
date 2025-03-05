@@ -1,0 +1,19 @@
+{
+  "routes": [
+    {
+      "route": "/api/getAreas",
+      "methods": ["GET"],
+      "rewrite": "/api/getAreas"
+    },
+    {
+      "route": "/api/getTeams",
+      "methods": ["GET"],
+      "rewrite": "/api/getTeams"
+    },
+        {
+      "route": "/api/message",
+      "methods": ["GET"],
+      "rewrite": "/api/message"
+    }
+  ]
+}
